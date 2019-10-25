@@ -1,18 +1,15 @@
 const mongoose = require("mongoose");
-// const config = require("config");
-// const db = config.get("mongoURI");
+const config = require("config");
+const db = config.get("mongoURI");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://Huda01:huda1@devconnector-yol6p.mongodb.net/test?retryWrites=true&w=majority",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-        useFindAndModify: false
-      }
-    );
+    await mongoose.connect(db, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false
+    });
 
     console.log("DB Connected...");
   } catch (err) {
