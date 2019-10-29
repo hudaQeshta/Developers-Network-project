@@ -1,6 +1,9 @@
 import React, { Fragment, useState } from "react";
-
-const Register = () => {
+import { Link } from "react-router-dom";
+import { connect } from "react-redux"; //this line connects Regiter component to redux, but we have to export it in down below, wrap the Register in it ( connect()(componentName)).
+import { setAlert } from "../../actions/alert"; // Whenever we bring in an action and want to use it we have to pass it in to connect ( connect(anyStateYouWannaMap, {an object with any actions you wanna use}))
+import PropTypes from "prop-types";
+const Register = ({ setAlert }) => {
   const [formData, setFormData] = useState({
     neme: "",
     email: "",
@@ -15,7 +18,7 @@ const Register = () => {
   const onSubmit = e => {
     e.preventDefault(); //Because when submitting the form all data has to be filled
     if (password !== confirmPassword) {
-      console.log("Password and Confirm password are not matched");
+      setAlert("Password and Confirm password are not matched", "danger");
     } else {
       console.log(formData);
     }
@@ -75,9 +78,18 @@ const Register = () => {
         <input type="submit" className="btn btn-primary" value="Register" />
       </form>
       <p className="my-1">
-        Already have an account? <a href="login.html">Sign In</a>
+        Already have an account? <Link to="/login">Sign In</Link>
       </p>
     </Fragment>
   );
 };
-export default Register;
+
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired
+};
+
+export default connect(
+  null,
+  { setAlert }
+)(Register); //connect(null, { setAlert }) we don't want to get any state so we put null, and the { setAlert } should allow us to use props.setAlert,
+// But insted of using props.setAlert we can destructure props and use setAlert alone.
