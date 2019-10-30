@@ -1,9 +1,11 @@
 import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux"; //this line connects Regiter component to redux, but we have to export it in down below, wrap the Register in it ( connect()(componentName)).
 import { setAlert } from "../../actions/alert"; // Whenever we bring in an action and want to use it we have to pass it in to connect ( connect(anyStateYouWannaMap, {an object with any actions you wanna use}))
+import { register } from "../../actions/auth";
 import PropTypes from "prop-types";
-const Register = ({ setAlert }) => {
+
+const Register = ({ setAlert, register, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     neme: "",
     email: "",
@@ -20,9 +22,13 @@ const Register = ({ setAlert }) => {
     if (password !== confirmPassword) {
       setAlert("Password and Confirm password are not matched", "danger");
     } else {
-      console.log(formData);
+      register({ name, email, password });
     }
   };
+
+  if (isAuthenticated) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <Fragment>
@@ -38,7 +44,6 @@ const Register = ({ setAlert }) => {
             name="name"
             value={name}
             onChange={e => onChange(e)}
-            required
           />
         </div>
         <div className="form-group">
@@ -48,7 +53,6 @@ const Register = ({ setAlert }) => {
             name="email"
             value={email}
             onChange={e => onChange(e)}
-            required
           />
           <small className="form-text">
             This site uses Gravatar so if you want a profile image, use a
@@ -60,7 +64,6 @@ const Register = ({ setAlert }) => {
             type="password"
             placeholder="Password"
             name="password"
-            minLength="6"
             value={password}
             onChange={e => onChange(e)}
           />
@@ -70,7 +73,6 @@ const Register = ({ setAlert }) => {
             type="password"
             placeholder="Confirm Password"
             name="confirmPassword"
-            minLength="6"
             value={confirmPassword}
             onChange={e => onChange(e)}
           />
@@ -85,11 +87,17 @@ const Register = ({ setAlert }) => {
 };
 
 Register.propTypes = {
-  setAlert: PropTypes.func.isRequired
+  setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool
 };
 
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated
+});
+
 export default connect(
-  null,
-  { setAlert }
+  mapStateToProps,
+  { setAlert, register }
 )(Register); //connect(null, { setAlert }) we don't want to get any state so we put null, and the { setAlert } should allow us to use props.setAlert,
 // But insted of using props.setAlert we can destructure props and use setAlert alone.
