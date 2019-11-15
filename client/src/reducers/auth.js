@@ -4,7 +4,9 @@ import {
   USER_LOADED,
   AUTH_ERROR,
   LOGIN_SUCCESS,
-  LOGIN_FAIL
+  LOGIN_FAIL,
+  LOGOUT,
+  ACCOUNT_DELETED
 } from "../actions/types";
 
 //We don't want to have an invalid token in the localStorage.
@@ -19,16 +21,16 @@ const initialState = {
 export default function(state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
-    case USER_LOADED: {
+    case USER_LOADED:
       return {
         ...state,
         isAuthenticated: true,
         loading: false,
         user: payload //Because the payload includes the user.
       };
-    }
+
     case REGISTER_SUCCESS:
-    case LOGIN_SUCCESS: {
+    case LOGIN_SUCCESS:
       localStorage.setItem("token", payload.token); //since it is a SUCCESS then we get back a token for the registered user in order to be logged in right away, so we need to set token in the localStorage to the returned one in the payload.
       return {
         ...state,
@@ -36,10 +38,12 @@ export default function(state = initialState, action) {
         isAuthenticated: true,
         loading: false
       };
-    }
+
     case REGISTER_FAIL: //Since both will do the same we can include a case inside the other.
     case AUTH_ERROR:
-    case LOGIN_FAIL: {
+    case LOGIN_FAIL:
+    case LOGOUT:
+    case ACCOUNT_DELETED:
       localStorage.removeItem("token"); //Remove the token from localStorage if the register failed.
       return {
         ...state,
@@ -47,7 +51,6 @@ export default function(state = initialState, action) {
         isAuthenticated: false,
         loading: false //Even if the register fails we're done loading.
       };
-    }
     default:
       return state;
   }
