@@ -13,10 +13,9 @@ const Post = require("../../models/Post");
 // @access   Private
 router.get("/me", auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate(
-      "user",
-      ["name", "avatar"]
-    );
+    const profile = await Profile.findOne({
+      user: req.user.id,
+    }).populate("user", ["name", "avatar"]);
 
     if (!profile) {
       return res.status(400).json({ msg: "There is no profile for this user" });
@@ -37,13 +36,9 @@ router.post(
   [
     auth,
     [
-      check("status", "Status is required")
-        .not()
-        .isEmpty(),
-      check("skills", "Skills is required")
-        .not()
-        .isEmpty()
-    ]
+      check("status", "Status is required").not().isEmpty(),
+      check("skills", "Skills is required").not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -63,7 +58,7 @@ router.post(
       facebook,
       twitter,
       instagram,
-      linkedin
+      linkedin,
     } = req.body;
 
     // Build profile object
@@ -76,7 +71,7 @@ router.post(
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-      profileFields.skills = skills.split(",").map(skill => {
+      profileFields.skills = skills.split(",").map((skill) => {
         return skill.trim();
       });
     }
@@ -134,7 +129,7 @@ router.get("/", async (req, res) => {
 router.get("/user/:user_id", async (req, res) => {
   try {
     const profile = await Profile.findOne({
-      user: req.params.user_id
+      user: req.params.user_id,
     }).populate("user", ["name", "avatar"]);
 
     if (!profile) return res.status(400).json({ msg: "Profile Not Found!" });
@@ -176,16 +171,10 @@ router.put(
   [
     auth,
     [
-      check("title", "Title field is required")
-        .not()
-        .isEmpty(),
-      check("company", "Company field is required")
-        .not()
-        .isEmpty(),
-      check("from", "From date field is required")
-        .not()
-        .isEmpty()
-    ]
+      check("title", "Title field is required").not().isEmpty(),
+      check("company", "Company field is required").not().isEmpty(),
+      check("from", "From date field is required").not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -200,7 +189,7 @@ router.put(
       from,
       to,
       current,
-      description
+      description,
     } = req.body;
 
     const newExp = {
@@ -210,16 +199,79 @@ router.put(
       from,
       to,
       current,
-      description
+      description,
     };
 
     try {
       const profile = await Profile.findOne({ user: req.user.id });
-
       profile.experience.unshift(newExp);
 
       await profile.save();
 
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error!");
+    }
+  }
+);
+
+//@route    PUT api/profile/experience/:exp_id
+//@desc     Modify profile experience
+//@access   Private
+
+router.put(
+  "/experience/:exp_id",
+  [
+    auth,
+    [
+      check("title", "Title field is required").not().isEmpty(),
+      check("company", "Company field is required").not().isEmpty(),
+      check("from", "From date field is required").not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      title,
+      company,
+      location,
+      from,
+      to,
+      current,
+      description,
+    } = req.body;
+
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+
+      //Get index of the experience to be updated
+      const updateIndex = profile.experience
+        .map((item) => item.id)
+        .indexOf(req.params.exp_id);
+      const newExp = profile.experience[updateIndex];
+      if (company) newExp.company = company;
+      if (title) newExp.title = title;
+      if (location) newExp.location = location;
+      if (from) newExp.from = from;
+      if (to) newExp.to = to;
+      newExp.current = current;
+      if (description) newExp.description = description;
+
+      //Update experience
+
+      if (newExp.current) {
+        profile.experience.splice(updateIndex, 1);
+        profile.experience.unshift(newExp);
+      } else {
+        profile.experience.splice(updateIndex, 1);
+        profile.experience.push(newExp);
+      }
+      await profile.save();
       res.json(profile);
     } catch (err) {
       console.error(err.message);
@@ -238,7 +290,7 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
 
     //Get index of the experience to be deleted
     const removeIndex = profile.experience
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.exp_id);
 
     //Remove experience
@@ -260,19 +312,11 @@ router.put(
   [
     auth,
     [
-      check("school", "School field is required")
-        .not()
-        .isEmpty(),
-      check("degree", "Degree field is required")
-        .not()
-        .isEmpty(),
-      check("fieldofstudy", "Field of study field is required")
-        .not()
-        .isEmpty(),
-      check("from", "From date field is required")
-        .not()
-        .isEmpty()
-    ]
+      check("school", "School field is required").not().isEmpty(),
+      check("degree", "Degree field is required").not().isEmpty(),
+      check("fieldofstudy", "Field of study field is required").not().isEmpty(),
+      check("from", "From date field is required").not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -287,7 +331,7 @@ router.put(
       from,
       to,
       current,
-      description
+      description,
     } = req.body;
 
     const newEdu = {
@@ -297,7 +341,7 @@ router.put(
       from,
       to,
       current,
-      description
+      description,
     };
 
     try {
@@ -307,6 +351,72 @@ router.put(
 
       await profile.save();
 
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error!");
+    }
+  }
+);
+
+//@route    PUT api/profile/education/:edu_id
+//@desc     Modify a profile education
+//@access   Private
+
+router.put(
+  "/education/:edu_id",
+  [
+    auth,
+    [
+      check("school", "School field is required").not().isEmpty(),
+      check("degree", "Degree field is required").not().isEmpty(),
+      check("fieldofstudy", "Field of study field is required").not().isEmpty(),
+      check("from", "From date field is required").not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description,
+    } = req.body;
+
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+
+      //Get index of the education to be updated
+      const updateIndex = profile.education
+        .map((item) => item.id)
+        .indexOf(req.params.edu_id);
+
+      const newEdu = profile.education[updateIndex];
+      if (school) newEdu.school = school;
+      if (degree) newEdu.degree = degree;
+      if (fieldofstudy) newEdu.fieldofstudy = fieldofstudy;
+      if (from) newEdu.from = from;
+      if (to) newEdu.to = to;
+      newEdu.current = current;
+      if (description) newEdu.description = description;
+
+      //Update education
+
+      if (newEdu.current) {
+        profile.education.splice(updateIndex, 1);
+        profile.education.unshift(newEdu);
+      } else {
+        profile.education.splice(updateIndex, 1);
+        profile.education.splice(updateIndex, 0, newEdu);
+      }
+      await profile.save();
       res.json(profile);
     } catch (err) {
       console.error(err.message);
@@ -325,7 +435,7 @@ router.delete("/education/:edu_id", auth, async (req, res) => {
 
     //Get index of the education to be deleted
     const removeIndex = profile.education
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.edu_id);
 
     //Remove education
@@ -351,7 +461,7 @@ router.get("/github/:username", (req, res) => {
         "githubClientId"
       )}&client_secret=${config.get("githubSecret")}`,
       method: "GET",
-      headers: { "user-agent": "node.js" }
+      headers: { "user-agent": "node.js" },
     };
     request(options, (error, response, body) => {
       if (error) console.error(error);

@@ -12,7 +12,7 @@ const AddEducation = ({ addEducation, history }) => {
     from: "",
     to: "",
     current: false,
-    description: ""
+    description: "",
   });
 
   const [toDateDisabled, toggleDisabled] = useState(false);
@@ -24,10 +24,10 @@ const AddEducation = ({ addEducation, history }) => {
     from,
     to,
     current,
-    description
+    description,
   } = formData;
 
-  const onChange = e =>
+  const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
@@ -40,7 +40,7 @@ const AddEducation = ({ addEducation, history }) => {
       <small>* = required field</small>
       <form
         className="form"
-        onSubmit={e => {
+        onSubmit={(e) => {
           e.preventDefault();
           addEducation(formData, history);
         }}
@@ -50,7 +50,7 @@ const AddEducation = ({ addEducation, history }) => {
             type="text"
             placeholder="* School or Bootcamp"
             name="school"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             value={school}
           />
         </div>
@@ -59,7 +59,7 @@ const AddEducation = ({ addEducation, history }) => {
             type="text"
             placeholder="* Degree or Certificate"
             name="degree"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             value={degree}
           />
         </div>
@@ -68,7 +68,7 @@ const AddEducation = ({ addEducation, history }) => {
             type="text"
             placeholder="Field of Study"
             name="fieldofstudy"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             value={fieldofstudy}
           />
         </div>
@@ -77,7 +77,7 @@ const AddEducation = ({ addEducation, history }) => {
           <input
             type="date"
             name="from"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             value={from}
           />
         </div>
@@ -87,7 +87,7 @@ const AddEducation = ({ addEducation, history }) => {
               type="checkbox"
               name="current"
               checked={current}
-              onChange={e => {
+              onChange={(e) => {
                 setFormData({ ...formData, current: !current });
                 toggleDisabled(!toDateDisabled);
               }}
@@ -101,7 +101,7 @@ const AddEducation = ({ addEducation, history }) => {
           <input
             type="date"
             name="to"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             value={to}
             disabled={toDateDisabled ? "disabled" : ""}
           />
@@ -112,7 +112,7 @@ const AddEducation = ({ addEducation, history }) => {
             cols="30"
             rows="5"
             placeholder="Program Description"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             value={description}
           ></textarea>
         </div>
@@ -126,10 +126,7 @@ const AddEducation = ({ addEducation, history }) => {
 };
 
 AddEducation.propTypes = {
-  addEducation: PropTypes.func.isRequired
+  addEducation: PropTypes.func.isRequired,
 };
 
-export default connect(
-  null,
-  { addEducation }
-)(withRouter(AddEducation));
+export default connect(null, { addEducation })(withRouter(AddEducation));

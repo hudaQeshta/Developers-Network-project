@@ -17,8 +17,8 @@ router.post(
     [
       check("text", "You have to write something in your post. ")
         .not()
-        .isEmpty()
-    ]
+        .isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -31,7 +31,7 @@ router.post(
         text: req.body.text,
         user: req.user.id,
         name: user.name,
-        avatar: user.avatar
+        avatar: user.avatar,
       });
 
       const post = await newPost.save();
@@ -78,6 +78,46 @@ router.get("/:id", auth, async (req, res) => {
   }
 });
 
+// @route    PUT api/posts/:id
+// @desc     Update post by id
+// @access   Private
+router.put(
+  "/:id",
+  [
+    auth,
+    [
+      check("text", "You have to write something in your post. ")
+        .not()
+        .isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      let post = await Post.findById(req.params.id);
+
+      if (post) {
+        post = await Post.findByIdAndUpdate(
+          { _id: req.params.id },
+          { text: req.body.text },
+          { new: true }
+        );
+      }
+      await post.save();
+      res.json(post);
+    } catch (err) {
+      console.error(err.message);
+      if (err.kind === "ObjectId") {
+        return res.status(404).json({ msg: "Post Not Found!" });
+      }
+      res.status(500).send("Server Error!");
+    }
+  }
+);
+
 // @route    DELETE api/posts/:id
 // @desc     Delete post by id
 // @access   Private
@@ -114,7 +154,8 @@ router.put("/like/:id", auth, async (req, res) => {
 
     //Check if the post already been liked by the same user
     if (
-      post.likes.filter(like => like.user.toString() === req.user.id).length > 0
+      post.likes.filter((like) => like.user.toString() === req.user.id).length >
+      0
     ) {
       //filter is a higher order array method.
       return res.status(400).json({ msg: "Post is already liked." });
@@ -139,15 +180,15 @@ router.put("/unlike/:id", auth, async (req, res) => {
 
     //Check if the post is liked by the same user
     if (
-      post.likes.filter(like => like.user.toString() === req.user.id).length ===
-      0
+      post.likes.filter((like) => like.user.toString() === req.user.id)
+        .length === 0
     ) {
       //filter is a higher order array method.
       return res.status(400).json({ msg: "Post has not yet been liked." });
     }
     //If the post is liked by the same user
     const removeIndex = post.likes
-      .map(like => like.user.toString())
+      .map((like) => like.user.toString())
       .indexOf(req.user.id);
 
     post.likes.splice(removeIndex, 1);
@@ -170,8 +211,8 @@ router.post(
     [
       check("text", "You have to write something in your comment. ")
         .not()
-        .isEmpty()
-    ]
+        .isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -186,7 +227,7 @@ router.post(
         text: req.body.text,
         user: req.user.id,
         name: user.name,
-        avatar: user.avatar
+        avatar: user.avatar,
       };
 
       post.comments.unshift(newComment);
@@ -210,7 +251,7 @@ router.delete("/comment/:id/:comment_id", auth, async (req, res) => {
 
     //Pull out the comment to be deleted.
     const comment = post.comments.find(
-      comment => comment.id === req.params.comment_id
+      (comment) => comment.id === req.params.comment_id
     );
 
     //Make sure comment exists
@@ -224,7 +265,7 @@ router.delete("/comment/:id/:comment_id", auth, async (req, res) => {
     }
 
     const removeIndex = post.comments
-      .map(comment => comment.user.toString())
+      .map((comment) => comment.user.toString())
       .indexOf(req.user.id);
 
     post.comments.splice(removeIndex, 1);
@@ -236,5 +277,54 @@ router.delete("/comment/:id/:comment_id", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+// @route    PUT api/posts/comment/:id/:comment_id
+// @desc     Update a comment
+// @access   Private
+
+router.put(
+  "/comment/:id/:comment_id",
+  [
+    auth,
+    [
+      check("text", "You have to write something in your comment. ")
+        .not()
+        .isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { text } = req.body;
+    try {
+      const post = await Post.findById(req.params.id);
+
+      //Pull out the comment to be Updated.
+      let comment = post.comments.find(
+        (comment) => comment.id === req.params.comment_id
+      );
+
+      //Make sure comment exists
+      if (!comment) {
+        return res.status(404).json({ msg: "Comment Not Found!" });
+      }
+
+      //Check the user who wrote the comment
+      if (comment.user.toString() !== req.user.id) {
+        return res.status(401).json({ msg: "User Not Authorized" });
+      }
+
+      comment.text = text;
+
+      await post.save();
+      res.json(post.comments);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error");
+    }
+  }
+);
 
 module.exports = router;

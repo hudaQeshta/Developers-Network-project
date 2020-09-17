@@ -9,7 +9,14 @@ import CreateProfile from "./components/profile-form/CreateProfile";
 import EditProfile from "./components/profile-form/EditProfile";
 import AddExperience from "./components/profile-form/AddExperience";
 import AddEducation from "./components/profile-form/AddEducation";
+import EditExperience from "./components/profile-form/EditExperience";
+import EditEducation from "./components/profile-form/EditEducation";
 import Profiles from "./components/profiles/Profiles";
+import Profile from "./components/profile/Profile";
+import Posts from "./components/posts/Posts";
+import EditPost from "./components/posts/EditPost";
+import EditComment from "./components/post/EditComment";
+import Post from "./components/post/Post";
 import Alert from "./components/layout/Alert";
 import PrivateRoute from "./components/routing/PrivateRoute";
 import "./App.css";
@@ -44,6 +51,7 @@ const App = () => {
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/profiles" component={Profiles} />
+              <Route exact path="/profile/:id" component={Profile} />
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
               <PrivateRoute
                 exact
@@ -60,10 +68,30 @@ const App = () => {
                 path="/add-experience"
                 component={AddExperience}
               />
+
               <PrivateRoute
                 exact
                 path="/add-education"
                 component={AddEducation}
+              />
+              <PrivateRoute
+                exact
+                path="/edit-experience/:id"
+                component={EditExperience}
+              />
+
+              <PrivateRoute
+                exact
+                path="/edit-education/:id"
+                component={EditEducation}
+              />
+              <PrivateRoute exact path="/posts" component={Posts} />
+              <PrivateRoute exact path="/posts/:id" component={Post} />
+              <PrivateRoute exact path="/edit-post/:id" component={EditPost} />
+              <PrivateRoute
+                exact
+                path="/edit-comment/:postId/:id"
+                component={EditComment}
               />
             </Switch>
           </section>

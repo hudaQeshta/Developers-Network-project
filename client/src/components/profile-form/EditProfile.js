@@ -8,7 +8,7 @@ const EditProfile = ({
   profile: { profile, loading },
   createProfile,
   getCurrentProfile,
-  history
+  history,
 }) => {
   const [formData, setFormData] = useState({
     company: "",
@@ -22,7 +22,7 @@ const EditProfile = ({
     facebook: "",
     twitter: "",
     instagram: "",
-    linkedin: ""
+    linkedin: "",
   });
 
   const [displaySocialInputs, toggleSocialInputs] = useState(false);
@@ -42,7 +42,7 @@ const EditProfile = ({
       facebook: loading || !profile.social ? "" : profile.social.facebook,
       instagram: loading || !profile.social ? "" : profile.social.instagram,
       youtube: loading || !profile.social ? "" : profile.social.youtube,
-      linkedin: loading || !profile.social ? "" : profile.social.linkedin
+      linkedin: loading || !profile.social ? "" : profile.social.linkedin,
     });
   }, [loading, getCurrentProfile]);
 
@@ -58,12 +58,12 @@ const EditProfile = ({
     facebook,
     twitter,
     instagram,
-    linkedin
+    linkedin,
   } = formData;
 
-  const onChange = e =>
+  const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     createProfile(formData, history, true);
   };
@@ -76,9 +76,9 @@ const EditProfile = ({
         profile stand out
       </p>
       <small>* = required field</small>
-      <form className="form" onSubmit={e => onSubmit(e)}>
+      <form className="form" onSubmit={(e) => onSubmit(e)}>
         <div className="form-group">
-          <select onChange={e => onChange(e)} name="status" value={status}>
+          <select onChange={(e) => onChange(e)} name="status" value={status}>
             <option value="0">* Select Professional Status</option>
             <option value="Developer">Developer</option>
             <option value="Junior Developer">Junior Developer</option>
@@ -97,7 +97,7 @@ const EditProfile = ({
           <input
             type="text"
             placeholder="Company"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             name="company"
             value={company}
           />
@@ -109,7 +109,7 @@ const EditProfile = ({
           <input
             type="text"
             placeholder="Website"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             name="website"
             value={website}
           />
@@ -121,7 +121,7 @@ const EditProfile = ({
           <input
             type="text"
             placeholder="Location"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             name="location"
             value={location}
           />
@@ -133,7 +133,7 @@ const EditProfile = ({
           <input
             type="text"
             placeholder="* Skills"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             name="skills"
             value={skills}
           />
@@ -145,7 +145,7 @@ const EditProfile = ({
           <input
             type="text"
             placeholder="Github Username"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             name="githubusername"
             value={githubusername}
           />
@@ -157,7 +157,7 @@ const EditProfile = ({
         <div className="form-group">
           <textarea
             placeholder="A short bio of yourself"
-            onChange={e => onChange(e)}
+            onChange={(e) => onChange(e)}
             name="bio"
             value={bio}
           ></textarea>
@@ -181,7 +181,7 @@ const EditProfile = ({
               <input
                 type="text"
                 placeholder="Twitter URL"
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
                 name="twitter"
                 value={twitter}
               />
@@ -192,7 +192,7 @@ const EditProfile = ({
               <input
                 type="text"
                 placeholder="Facebook URL"
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
                 name="facebook"
                 value={facebook}
               />
@@ -203,7 +203,7 @@ const EditProfile = ({
               <input
                 type="text"
                 placeholder="YouTube URL"
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
                 name="youtube"
                 value={youtube}
               />
@@ -214,7 +214,7 @@ const EditProfile = ({
               <input
                 type="text"
                 placeholder="Linkedin URL"
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
                 name="linkedin"
                 value={linkedin}
               />
@@ -225,7 +225,7 @@ const EditProfile = ({
               <input
                 type="text"
                 placeholder="Instagram URL"
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
                 name="instagram"
                 value={instagram}
               />
@@ -244,14 +244,13 @@ const EditProfile = ({
 EditProfile.propTypes = {
   createProfile: PropTypes.func.isRequired,
   getCurrentProfile: PropTypes.func.isRequired,
-  profile: PropTypes.object.isRequired
+  profile: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-  profile: state.profile
+const mapStateToProps = (state) => ({
+  profile: state.profile,
 });
 
-export default connect(
-  mapStateToProps,
-  { createProfile, getCurrentProfile }
-)(withRouter(EditProfile));
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
+  withRouter(EditProfile)
+);

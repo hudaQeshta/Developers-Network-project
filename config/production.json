@@ -1,0 +1,6 @@
+{
+  "mongoURI": "mongodb+srv://Huda01:huda1@devconnector-yol6p.mongodb.net/test?retryWrites=true&w=majority",
+  "jwtSecret": "secrettoken",
+  "githubClientId": "d09045ce8d633cf98039",
+  "githubSecret": "d692d1b72a41f1a9dda081149567db0ce78a5544"
+}
